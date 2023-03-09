@@ -1,31 +1,41 @@
-import { useReducer } from "react";
+import { createContext, useContext, useReducer } from "react";
+import { authReducer } from ".";
 import { types } from "../types/types";
-import { AuthContext, authReducer } from "./";
 
 const initialState = {
   logged: false,
 };
 
-const AuthProvider = ({ children }) => {
-  const [authState, dipatch] = useReducer(authReducer, initialState);
+// create context Authentication
+const authContext = createContext();
 
-  const login = ( name = '') =>{
-    const action = {
+//  custom hook para utilizar el contexto de auth
+export function useAuth() {
+  return useContext(authContext);
+}
+
+const AuthProvider = ({ children }) => {
+  const [authState, dispatch] = useReducer(authReducer, initialState);
+
+  const login = (name = "") => {
+    dispatch({
       type: types.login,
       payload: {
-        id: 'ABC',
+        id: "ABC",
         name: name,
-      }
-    }
-    dipatch(action)
-  }
+      },
+    });
+  };
 
   return (
-        <AuthContext.Provider value={{
-          ...authState, 
-          login: login,
-        }}>
-            {children}
-        </AuthContext.Provider>)
+    <authContext.Provider
+      value={{
+        ...authState,
+        login: login,
+      }}
+    >
+      {children}
+    </authContext.Provider>
+  );
 };
 export default AuthProvider;
